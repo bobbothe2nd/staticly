@@ -1,0 +1,13 @@
+[package]
+name = "staticly"
+version = "0.1.0"
+description = "Compile-time lookup generator"
+edition = "2024"
+documentation = "https://docs.rs/staticly"
+repository = "https://github.com/bobbothe2nd/staticly"
+readme = "../../README.md"
+license = "MIT"
+
+[dependencies]
+staticly-hash = { path = "../staticly-hash", version = "0.1.0" }
+staticly-macros = { path = "../staticly-macros", version = "0.1.0" }

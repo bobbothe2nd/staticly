@@ -1,0 +1,17 @@
+[package]
+name = "staticly-macros"
+version = "0.1.0"
+description = "Compile-time lookup generator"
+edition = "2024"
+documentation = "https://docs.rs/staticly-macros"
+repository = "https://github.com/bobbothe2nd/staticly"
+readme = "../../README.md"
+license = "MIT"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0.107"
+staticly-hash = { path = "../staticly-hash", version = "0.1.0" }
+syn = { version = "3.0.6", default-features = false, features = ["parsing"] }

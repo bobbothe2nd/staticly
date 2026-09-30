@@ -1,0 +1,9 @@
+[package]
+name = "staticly-hash"
+version = "0.1.0"
+description = "Compile-time lookup generator"
+edition = "2024"
+documentation = "https://docs.rs/staticly-hash"
+repository = "https://github.com/bobbothe2nd/staticly-hash"
+readme = "../../README.md"
+license = "MIT"

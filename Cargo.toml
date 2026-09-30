@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/staticly", "crates/staticly-macros", "crates/staticly-hash"]
+resolver = "3"
