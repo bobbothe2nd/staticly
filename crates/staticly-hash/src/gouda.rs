@@ -8,23 +8,11 @@ pub const fn gouda(bytes: &[u8]) -> u64 {
     const CHEESE_P2: u64 = 0x93544412AABC9E1A;
     const CHEESE_ROT: u32 = 28;
 
-    gouda_in(
-        bytes,
-        CHEESE_P0,
-        CHEESE_P1,
-        CHEESE_P2,
-        CHEESE_ROT,
-    )
+    gouda_in(bytes, CHEESE_P0, CHEESE_P1, CHEESE_P2, CHEESE_ROT)
 }
 
 #[inline(always)]
-pub const fn gouda_in(
-    bytes: &[u8],
-    p0: u64,
-    p1: u64,
-    p2: u64,
-    rot: u32,
-) -> u64 {
+pub const fn gouda_in(bytes: &[u8], p0: u64, p1: u64, p2: u64, rot: u32) -> u64 {
     let mut p = bytes.as_ptr();
     let mut len = bytes.len();
 

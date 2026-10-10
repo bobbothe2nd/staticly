@@ -65,17 +65,26 @@ impl<V, const LEN: usize> StaticMap<V, LEN> {
 
     #[inline(always)]
     pub fn into_iter(&self) -> StaticMapIter<V> {
-        StaticMapIter { next_func: self.iter_func, index: 0 }
+        StaticMapIter {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
     #[inline(always)]
     pub fn into_values(&self) -> Values<V> {
-        Values { next_func: self.iter_func, index: 0 }
+        Values {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
     #[inline(always)]
     pub fn into_keys(&self) -> Keys<V> {
-        Keys { next_func: self.iter_func, index: 0 }
+        Keys {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
     #[inline(always)]
@@ -135,7 +144,10 @@ impl<const LEN: usize> StaticSet<LEN> {
 
     #[inline(always)]
     pub fn into_iter(&self) -> StaticSetIter {
-        StaticSetIter { next_func: self.iter_func, index: 0 }
+        StaticSetIter {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
     #[inline(always)]

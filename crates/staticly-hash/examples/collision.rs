@@ -15,7 +15,15 @@ struct Score {
 
 impl Debug for Score {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "collisions={} max_bucket={} used={} spread={} full_collisions={}", self.collisions, self.max_bucket, self.used_buckets, self.spread, self.full_hash_collisions)
+        write!(
+            f,
+            "collisions={} max_bucket={} used={} spread={} full_collisions={}",
+            self.collisions,
+            self.max_bucket,
+            self.used_buckets,
+            self.spread,
+            self.full_hash_collisions
+        )
     }
 }
 
@@ -35,10 +43,7 @@ fn score(hash: impl Fn(&[u8]) -> u64) -> Score {
 
     let used_buckets = buckets.iter().filter(|&&n| n != 0).count();
 
-    let collisions = buckets
-        .iter()
-        .map(|&n| n.saturating_sub(1))
-        .sum();
+    let collisions = buckets.iter().map(|&n| n.saturating_sub(1)).sum();
 
     let max_bucket = buckets.iter().copied().max().unwrap_or(0);
 
@@ -47,10 +52,7 @@ fn score(hash: impl Fn(&[u8]) -> u64) -> Score {
         .map(|&n| n.saturating_sub(1) * n.saturating_sub(1))
         .sum();
 
-    let full_hash_collisions = hashes
-        .values()
-        .map(|&n| n.saturating_sub(1))
-        .sum();
+    let full_hash_collisions = hashes.values().map(|&n| n.saturating_sub(1)).sum();
 
     Score {
         collisions,
@@ -73,11 +75,8 @@ fn random_u64(state: &mut u64) -> u64 {
 
 fn better(a: Score, b: Score) -> bool {
     a.collisions < b.collisions
-        || (a.collisions == b.collisions
-            && a.max_bucket < b.max_bucket)
-        || (a.collisions == b.collisions
-            && a.max_bucket == b.max_bucket
-            && a.spread < b.spread)
+        || (a.collisions == b.collisions && a.max_bucket < b.max_bucket)
+        || (a.collisions == b.collisions && a.max_bucket == b.max_bucket && a.spread < b.spread)
         || (a.collisions == b.collisions
             && a.max_bucket == b.max_bucket
             && a.spread == b.spread
@@ -158,81 +157,11 @@ fn main() {
 }
 
 const KEYWORDS: &[&str] = &[
-    "fn",
-    "def",
-    "let",
-    "mut",
-    "pub",
-    "struct",
-    "enum",
-    "impl",
-    "trait",
-    "return",
-    "match",
-    "if",
-    "else",
-    "while",
-    "loop",
-    "for",
-    "use",
-    "mod",
-    "const",
-    "static",
-    "type",
-    "where",
-    "async",
-    "await",
-    "move",
-    "crate",
-    "self",
-    "add",
-    "addx",
-    "mul",
-    "mulx",
-    "sub",
-    "subx",
-    "div",
-    "divx",
-    "super",
-    "in",
-    "then",
-    "var",
-    "shared",
-    "global",
-    "num",
-    "elseif",
-    "elif",
-    "or",
-    "and",
-    "xor",
-    "nor",
-    "nand",
-    "xnor",
-    "shl",
-    "shr",
-    "rol",
-    "ror",
-    "rolx",
-    "rorx",
-    "hadd",
-    "hmul",
-    "hsub",
-    "hdiv",
-    "f32",
-    "f64",
-    "f16",
-    "f128",
-    "u8",
-    "u16",
-    "u32",
-    "u64",
-    "u128",
-    "i8",
-    "i16",
-    "i32",
-    "i64",
-    "i128",
-    "usize",
-    "isize",
-    "bool",
+    "fn", "def", "let", "mut", "pub", "struct", "enum", "impl", "trait", "return", "match", "if",
+    "else", "while", "loop", "for", "use", "mod", "const", "static", "type", "where", "async",
+    "await", "move", "crate", "self", "add", "addx", "mul", "mulx", "sub", "subx", "div", "divx",
+    "super", "in", "then", "var", "shared", "global", "num", "elseif", "elif", "or", "and", "xor",
+    "nor", "nand", "xnor", "shl", "shr", "rol", "ror", "rolx", "rorx", "hadd", "hmul", "hsub",
+    "hdiv", "f32", "f64", "f16", "f128", "u8", "u16", "u32", "u64", "u128", "i8", "i16", "i32",
+    "i64", "i128", "usize", "isize", "bool",
 ];

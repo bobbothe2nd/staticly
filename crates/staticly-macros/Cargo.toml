@@ -5,7 +5,6 @@ description = "Compile-time lookup generator"
 edition = "2024"
 documentation = "https://docs.rs/staticly-macros"
 repository = "https://github.com/bobbothe2nd/staticly"
-readme = "../../README.md"
 license = "MIT"
 
 [lib]

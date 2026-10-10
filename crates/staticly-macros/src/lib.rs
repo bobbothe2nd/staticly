@@ -64,10 +64,7 @@ fn hash_impl(input: TokenStream, depth: usize) -> TokenStream {
             if let Some(lit) = parse_string_literal(&lit) {
                 expand_hash(lit.as_bytes())
             } else {
-                error!(
-                    lit.span(),
-                    "expected a string literal",
-                )
+                error!(lit.span(), "expected a string literal",)
             }
         }
 
@@ -99,9 +96,7 @@ pub fn unique(input: TokenStream) -> TokenStream {
 
     for token in input {
         match token {
-            TokenTree::Punct(punct)
-                if punct == ',' && !expect_literal =>
-            {
+            TokenTree::Punct(punct) if punct == ',' && !expect_literal => {
                 expect_literal = true;
             }
 
@@ -109,28 +104,19 @@ pub fn unique(input: TokenStream) -> TokenStream {
                 let value = match parse_string_literal(&lit) {
                     Some(value) => value,
                     None => {
-                        return error!(
-                            lit.span(),
-                            "expected a string literal",
-                        );
+                        return error!(lit.span(), "expected a string literal",);
                     }
                 };
 
                 if !seen.insert(value.clone()) {
-                    return error!(
-                        lit.span(),
-                        "duplicate key `{value}`",
-                    );
+                    return error!(lit.span(), "duplicate key `{value}`",);
                 }
 
                 expect_literal = false;
             }
 
             token => {
-                return error!(
-                    token.span(),
-                    "expected a string literal followed by `,`",
-                );
+                return error!(token.span(), "expected a string literal followed by `,`",);
             }
         }
     }
@@ -146,9 +132,7 @@ fn unwrap_none_groups(input: TokenStream, depth: usize) -> TokenStream {
     input
         .into_iter()
         .flat_map(|token| match token {
-            TokenTree::Group(group)
-                if group.delimiter() == Delimiter::None =>
-            {
+            TokenTree::Group(group) if group.delimiter() == Delimiter::None => {
                 unwrap_none_groups(group.stream(), depth + 1)
             }
             other => TokenStream::from(other),
