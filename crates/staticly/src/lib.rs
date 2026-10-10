@@ -153,22 +153,56 @@ macro_rules! switch {
 #[macro_export]
 macro_rules! static_enum {
     (
-        $ty:ty {
+        $(#[$meta:meta])*
+        $vis:vis enum $name:ident {
             $(
                 $variant:ident = $key:literal
             ),* $(,)?
         }
     ) => {
-        impl $ty {
-            pub fn from_str(s: &str) -> Option<Self> {
+        $(#[$meta])*
+        $vis enum $name {
+            $($variant),*
+        }
+
+        $crate::static_enum! {
+            impl $name {
+                $($variant = $key),*
+            }
+        }
+    };
+
+    (
+        impl $ty:ty {
+            $(
+                $variant:ident = $key:literal
+            ),* $(,)?
+        }
+    ) => {
+        $crate::unique! {$(
+            $key
+        ),*}
+
+        impl ::core::str::FromStr for $ty {
+            type Err = ();
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
                 match $crate::algo::fnv1a(s.as_bytes()) {
                     $(
-                        $crate::hash!($key) if s == $key => Some(Self::$variant),
+                        $crate::hash!($key) if s == $key => Ok(Self::$variant),
                     )*
-                    _ => None,
+                    _ => Err(()),
                 }
             }
+        }
 
+        impl From<$ty> for &'static str {
+            fn from(val: $ty) -> Self {
+                val.as_str()
+            }
+        }
+
+        impl $ty {
             pub const fn from_hash(hash: u64) -> Option<Self> {
                 match hash {
                     $(

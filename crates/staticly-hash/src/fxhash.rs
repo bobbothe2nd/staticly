@@ -5,16 +5,8 @@ pub const fn fxhash(bytes: &[u8]) -> u64 {
     let mut i = 0;
 
     while i + 8 <= bytes.len() {
-        let chunk = u64::from_le_bytes([
-            bytes[i],
-            bytes[i + 1],
-            bytes[i + 2],
-            bytes[i + 3],
-            bytes[i + 4],
-            bytes[i + 5],
-            bytes[i + 6],
-            bytes[i + 7],
-        ]);
+        let ptr = unsafe { bytes.as_ptr().add(i) };
+        let chunk = unsafe { ptr.cast::<u64>().read_unaligned() };
 
         hash = hash.rotate_left(5) ^ chunk;
         hash = hash.wrapping_mul(K);

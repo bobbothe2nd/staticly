@@ -1,4 +1,4 @@
-use staticly::{hash, static_enum, static_map, static_set, switch};
+use staticly::{hash, static_enum, static_map, static_set, switch, algo::fnv1a};
 
 static_map! {
     HTTP_STATUS: u64 = {
@@ -18,33 +18,21 @@ static_set! {
     ];
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Color {
-    Red,
-    Green,
-    Blue,
-}
-
 static_enum! {
-    Color {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+    enum Color {
         Red = "red",
         Green = "green",
         Blue = "blue",
     }
 }
 
-const NAME: &str = Color::Red.as_str();
-const HASH: u64 = Color::Red.hash();
-
 fn main() {
-    let hashed_ident = hash!(get);
-    let hashed_str = hash!("get");
-    let hashed_bytes = hash!(b"get");
-    let hashed_cstr = hash!(c"get");
+    const GET_HASH: u64 = hash!("get");
+    const GREEN_HASH: u64 = Color::Green.hash();
+    const BLUE_STR: &str = Color::Blue.as_str();
 
-    assert_eq!(hashed_str, hashed_ident);
-    assert_eq!(hashed_str, hashed_bytes);
-    assert_eq!(hashed_str, hashed_cstr);
+    assert_eq!(GET_HASH, fnv1a(b"get"));
 
     assert!(!HTTP_STATUS.is_empty());
     assert_eq!(HTTP_STATUS.len(), 6);
@@ -75,7 +63,7 @@ fn main() {
     });
     assert_eq!(val, 123);
 
-    assert_eq!(Color::from_str("red"), Some(Color::Red));
-    assert_eq!(NAME, "red");
-    assert_eq!(HASH, hash!("red"));
+    assert_eq!("red".parse(), Ok(Color::Red));
+    assert_eq!(BLUE_STR, "blue");
+    assert_eq!(GREEN_HASH, hash!("green"));
 }

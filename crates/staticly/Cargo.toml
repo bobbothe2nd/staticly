@@ -7,6 +7,8 @@ documentation = "https://docs.rs/staticly"
 repository = "https://github.com/bobbothe2nd/staticly"
 readme = "../../README.md"
 license = "MIT"
+keywords = ["hash", "hashmap", "map", "static" ]
+categories = [ "data-structures" ]
 
 [dependencies]
 staticly-hash = { path = "../staticly-hash", version = "0.1.0" }
