@@ -1,12 +1,12 @@
 #[derive(Debug)]
-pub struct StaticMap<K, V, const LEN: usize> {
-    get_func: fn(K) -> Option<V>,
+pub struct StaticMap<V, const LEN: usize> {
+    get_func: fn(&str) -> Option<V>,
     get_hash_func: fn(u64) -> Option<V>,
-    iter_func: fn(usize) -> Option<(K, V)>,
-    contains_key_func: fn(&K) -> bool,
+    iter_func: fn(usize) -> Option<(&'static str, V)>,
+    contains_key_func: fn(&str) -> bool,
 }
 
-impl<K, V, const LEN: usize> StaticMap<K, V, LEN> {
+impl<V, const LEN: usize> StaticMap<V, LEN> {
     pub const LEN: usize = LEN;
 
     /// Constructs a new map from a VTable.
@@ -15,10 +15,10 @@ impl<K, V, const LEN: usize> StaticMap<K, V, LEN> {
     /// be used directly.
     #[inline(always)]
     pub const fn new(
-        get_func: fn(K) -> Option<V>,
+        get_func: fn(&str) -> Option<V>,
         get_hash_func: fn(u64) -> Option<V>,
-        iter_func: fn(usize) -> Option<(K, V)>,
-        contains_key_func: fn(&K) -> bool,
+        iter_func: fn(usize) -> Option<(&'static str, V)>,
+        contains_key_func: fn(&str) -> bool,
     ) -> Self {
         Self {
             get_func,
@@ -33,8 +33,8 @@ impl<K, V, const LEN: usize> StaticMap<K, V, LEN> {
     /// This is collision safe and will check against the query on
     /// hash equality.
     #[inline(always)]
-    pub fn get<Q: Into<K>>(&self, query: Q) -> Option<V> {
-        (self.get_func)(query.into())
+    pub fn get(&self, query: &str) -> Option<V> {
+        (self.get_func)(query)
     }
 
     /// Gets an unspecified value matching the provided hash.
@@ -49,8 +49,8 @@ impl<K, V, const LEN: usize> StaticMap<K, V, LEN> {
 
     /// Checks if the key is included in the static map.
     #[inline(always)]
-    pub fn contains_key<Q: Into<K>>(&self, query: Q) -> bool {
-        (self.contains_key_func)(&query.into())
+    pub fn contains_key(&self, query: &str) -> bool {
+        (self.contains_key_func)(query)
     }
 
     #[inline(always)]
@@ -64,42 +64,42 @@ impl<K, V, const LEN: usize> StaticMap<K, V, LEN> {
     }
 
     #[inline(always)]
-    pub fn into_iter(&self) -> StaticMapIter<K, V> {
+    pub fn into_iter(&self) -> StaticMapIter<V> {
         StaticMapIter { next_func: self.iter_func, index: 0 }
     }
 
     #[inline(always)]
-    pub fn into_values(&self) -> Values<K, V> {
+    pub fn into_values(&self) -> Values<V> {
         Values { next_func: self.iter_func, index: 0 }
     }
 
     #[inline(always)]
-    pub fn into_keys(&self) -> Keys<K, V> {
+    pub fn into_keys(&self) -> Keys<V> {
         Keys { next_func: self.iter_func, index: 0 }
     }
 
     #[inline(always)]
-    pub fn iter(&self) -> StaticMapIter<K, V> {
+    pub fn iter(&self) -> StaticMapIter<V> {
         self.into_iter()
     }
 
     #[inline(always)]
-    pub fn values(&self) -> Values<K, V> {
+    pub fn values(&self) -> Values<V> {
         self.into_values()
     }
 
     #[inline(always)]
-    pub fn keys(&self) -> Keys<K, V> {
+    pub fn keys(&self) -> Keys<V> {
         self.into_keys()
     }
 }
 #[derive(Debug)]
-pub struct StaticSet<K, const LEN: usize> {
-    iter_func: fn(usize) -> Option<K>,
-    contains_func: fn(&K) -> bool,
+pub struct StaticSet<const LEN: usize> {
+    iter_func: fn(usize) -> Option<&'static str>,
+    contains_func: fn(&str) -> bool,
 }
 
-impl<K, const LEN: usize> StaticSet<K, LEN> {
+impl<const LEN: usize> StaticSet<LEN> {
     pub const LEN: usize = LEN;
 
     /// Constructs a new map from a VTable.
@@ -108,8 +108,8 @@ impl<K, const LEN: usize> StaticSet<K, LEN> {
     /// be used directly.
     #[inline(always)]
     pub const fn new(
-        iter_func: fn(usize) -> Option<K>,
-        contains_func: fn(&K) -> bool,
+        iter_func: fn(usize) -> Option<&'static str>,
+        contains_func: fn(&str) -> bool,
     ) -> Self {
         Self {
             iter_func,
@@ -119,8 +119,8 @@ impl<K, const LEN: usize> StaticSet<K, LEN> {
 
     /// Checks if the key is included in the static map.
     #[inline(always)]
-    pub fn contains<Q: Into<K>>(&self, query: Q) -> bool {
-        (self.contains_func)(&query.into())
+    pub fn contains(&self, query: &str) -> bool {
+        (self.contains_func)(query)
     }
 
     #[inline(always)]
@@ -134,24 +134,24 @@ impl<K, const LEN: usize> StaticSet<K, LEN> {
     }
 
     #[inline(always)]
-    pub fn into_iter(&self) -> StaticSetIter<K> {
+    pub fn into_iter(&self) -> StaticSetIter {
         StaticSetIter { next_func: self.iter_func, index: 0 }
     }
 
     #[inline(always)]
-    pub fn iter(&self) -> StaticSetIter<K> {
+    pub fn iter(&self) -> StaticSetIter {
         self.into_iter()
     }
 }
 
 #[derive(Debug)]
-pub struct StaticMapIter<K, V> {
-    next_func: fn(usize) -> Option<(K, V)>,
+pub struct StaticMapIter<V> {
+    next_func: fn(usize) -> Option<(&'static str, V)>,
     index: usize,
 }
 
-impl<K, V> Iterator for StaticMapIter<K, V> {
-    type Item = (K, V);
+impl<V> Iterator for StaticMapIter<V> {
+    type Item = (&'static str, V);
 
     fn next(&mut self) -> Option<Self::Item> {
         let index = self.index;
@@ -161,13 +161,13 @@ impl<K, V> Iterator for StaticMapIter<K, V> {
 }
 
 #[derive(Debug)]
-pub struct StaticSetIter<K> {
-    next_func: fn(usize) -> Option<K>,
+pub struct StaticSetIter {
+    next_func: fn(usize) -> Option<&'static str>,
     index: usize,
 }
 
-impl<K> Iterator for StaticSetIter<K> {
-    type Item = K;
+impl Iterator for StaticSetIter {
+    type Item = &'static str;
 
     fn next(&mut self) -> Option<Self::Item> {
         let index = self.index;
@@ -177,13 +177,13 @@ impl<K> Iterator for StaticSetIter<K> {
 }
 
 #[derive(Debug)]
-pub struct Values<K, V> {
-    next_func: fn(usize) -> Option<(K, V)>,
+pub struct Values<V> {
+    next_func: fn(usize) -> Option<(&'static str, V)>,
     index: usize,
 }
 
-impl<K, V> Iterator for Values<K, V> {
-    type Item = K;
+impl<V> Iterator for Values<V> {
+    type Item = &'static str;
 
     fn next(&mut self) -> Option<Self::Item> {
         let index = self.index;
@@ -193,12 +193,12 @@ impl<K, V> Iterator for Values<K, V> {
 }
 
 #[derive(Debug)]
-pub struct Keys<K, V> {
-    next_func: fn(usize) -> Option<(K, V)>,
+pub struct Keys<V> {
+    next_func: fn(usize) -> Option<(&'static str, V)>,
     index: usize,
 }
 
-impl<K, V> Iterator for Keys<K, V> {
+impl<V> Iterator for Keys<V> {
     type Item = V;
 
     fn next(&mut self) -> Option<Self::Item> {

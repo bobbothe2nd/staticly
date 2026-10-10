@@ -1,4 +1,4 @@
-use staticly::{hash, static_map, static_set, switch};
+use staticly::{hash, static_enum, static_map, static_set, switch};
 
 static_map! {
     HTTP_STATUS: u64 = {
@@ -17,6 +17,24 @@ static_set! {
         "POST",
     ];
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Color {
+    Red,
+    Green,
+    Blue,
+}
+
+static_enum! {
+    Color {
+        Red = "red",
+        Green = "green",
+        Blue = "blue",
+    }
+}
+
+const NAME: &str = Color::Red.as_str();
+const HASH: u64 = Color::Red.hash();
 
 fn main() {
     let hashed_ident = hash!(get);
@@ -42,7 +60,7 @@ fn main() {
     }
 
     assert!(!HTTP_METHODS.is_empty());
-    assert_eq!(HTTP_METHODS.len(), 1);
+    assert_eq!(HTTP_METHODS.len(), 2);
     assert!(HTTP_METHODS.contains("GET"));
 
     println!("\nmethods:");
@@ -56,4 +74,8 @@ fn main() {
         _ => 0,
     });
     assert_eq!(val, 123);
+
+    assert_eq!(Color::from_str("red"), Some(Color::Red));
+    assert_eq!(NAME, "red");
+    assert_eq!(HASH, hash!("red"));
 }

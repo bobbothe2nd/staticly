@@ -2,11 +2,7 @@
 
 pub mod map;
 
-pub mod algo {
-    //! Runtime hashing algorithms
-
-    pub use staticly_hash::*;
-}
+pub use staticly_hash as algo;
 
 pub use staticly_macros::*;
 
@@ -22,7 +18,7 @@ macro_rules! static_map {
                 $key
             ),*}
 
-            $vis static $name: $crate::map::StaticMap<&str, $ty, { 0$(+ {
+            $vis static $name: $crate::map::StaticMap<$ty, { 0$(+ {
                 let _ = $val;
                 1
             })* }> = {
@@ -31,21 +27,17 @@ macro_rules! static_map {
                     1
                 })*;
 
-                fn hash(key: &str) -> u64 {
-                    $crate::algo::fnv1a(key.as_bytes(), None)
-                }
-
-                fn contains_key(key: &&str) -> bool {
-                    match hash(*key) {
+                fn contains_key(key: &str) -> bool {
+                    match $crate::algo::fnv1a(key.as_bytes()) {
                         $(
-                            $crate::hash!($key) if *key == $key => true,
+                            $crate::hash!($key) if key == $key => true,
                         )*
                         _ => false,
                     }
                 }
 
                 fn get(key: &str) -> Option<$ty> {
-                    match hash(key) {
+                    match $crate::algo::fnv1a(key.as_bytes()) {
                         $(
                             $crate::hash!($key) if key == $key => Some($val),
                         )*
@@ -90,7 +82,7 @@ macro_rules! static_set {
                 $key
             ),*}
 
-            $vis static $name: $crate::map::StaticSet<&str, { 0$(+ {
+            $vis static $name: $crate::map::StaticSet<{ 0$(+ {
                 let _ = $key;
                 1
             })* }> = {
@@ -99,14 +91,10 @@ macro_rules! static_set {
                     1
                 })*;
 
-                fn hash(key: &str) -> u64 {
-                    $crate::algo::fnv1a(key.as_bytes(), None)
-                }
-
-                fn contains(key: &&str) -> bool {
-                    match hash(*key) {
+                fn contains(key: &str) -> bool {
+                    match $crate::algo::fnv1a(key.as_bytes()) {
                         $(
-                            $crate::hash!($key) if *key == $key => true,
+                            $crate::hash!($key) if key == $key => true,
                         )*
                         _ => false,
                     }
@@ -140,7 +128,7 @@ macro_rules! switch {
             $key
         ),*}
 
-        match $crate::algo::fnv1a($var.as_bytes(), None) {
+        match $crate::algo::fnv1a($var.as_bytes()) {
             $(
                 $crate::hash!($key) if $var == $key => $eval,
             )*
@@ -159,5 +147,52 @@ macro_rules! switch {
             $key => $eval,
             _ => #default
         })
+    };
+}
+
+#[macro_export]
+macro_rules! static_enum {
+    (
+        $ty:ty {
+            $(
+                $variant:ident = $key:literal
+            ),* $(,)?
+        }
+    ) => {
+        impl $ty {
+            pub fn from_str(s: &str) -> Option<Self> {
+                match $crate::algo::fnv1a(s.as_bytes()) {
+                    $(
+                        $crate::hash!($key) if s == $key => Some(Self::$variant),
+                    )*
+                    _ => None,
+                }
+            }
+
+            pub const fn from_hash(hash: u64) -> Option<Self> {
+                match hash {
+                    $(
+                        $crate::hash!($key) => Some(Self::$variant),
+                    )*
+                    _ => None,
+                }
+            }
+
+            pub const fn as_str(self) -> &'static str {
+                match self {
+                    $(
+                        Self::$variant => $key,
+                    )*
+                }
+            }
+
+            pub const fn hash(self) -> u64 {
+                match self {
+                    $(
+                        Self::$variant => $crate::hash!($key),
+                    )*
+                }
+            }
+        }
     };
 }

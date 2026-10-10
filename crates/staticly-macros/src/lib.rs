@@ -78,7 +78,7 @@ fn hash_impl(input: TokenStream2, depth: usize) -> TokenStream {
 }
 
 fn expand_hash(bytes: &[u8]) -> TokenStream {
-    let hashed = staticly_hash::fnv1a(bytes, None);
+    let hashed = staticly_hash::fnv1a(bytes);
 
     format!("{hashed}u64")
         .parse()
