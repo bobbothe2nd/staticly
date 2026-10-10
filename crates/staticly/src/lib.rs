@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 #![no_std]
 
 pub mod map;
@@ -28,7 +30,7 @@ macro_rules! static_map {
                 })*;
 
                 fn contains_key(key: &str) -> bool {
-                    match $crate::algo::fnv1a(key.as_bytes()) {
+                    match $crate::algo::gouda(key.as_bytes()) {
                         $(
                             $crate::hash!($key) if key == $key => true,
                         )*
@@ -37,7 +39,7 @@ macro_rules! static_map {
                 }
 
                 fn get(key: &str) -> Option<$ty> {
-                    match $crate::algo::fnv1a(key.as_bytes()) {
+                    match $crate::algo::gouda(key.as_bytes()) {
                         $(
                             $crate::hash!($key) if key == $key => Some($val),
                         )*
@@ -92,7 +94,7 @@ macro_rules! static_set {
                 })*;
 
                 fn contains(key: &str) -> bool {
-                    match $crate::algo::fnv1a(key.as_bytes()) {
+                    match $crate::algo::gouda(key.as_bytes()) {
                         $(
                             $crate::hash!($key) if key == $key => true,
                         )*
@@ -128,7 +130,7 @@ macro_rules! switch {
             $key
         ),*}
 
-        match $crate::algo::fnv1a($var.as_bytes()) {
+        match $crate::algo::gouda($var.as_bytes()) {
             $(
                 $crate::hash!($key) if $var == $key => $eval,
             )*
@@ -187,7 +189,7 @@ macro_rules! static_enum {
             type Err = ();
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                match $crate::algo::fnv1a(s.as_bytes()) {
+                match $crate::algo::gouda(s.as_bytes()) {
                     $(
                         $crate::hash!($key) if s == $key => Ok(Self::$variant),
                     )*

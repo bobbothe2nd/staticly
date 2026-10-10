@@ -1,5 +1,7 @@
 //! Macros for `staticly` hashing/lookup
 
+#![forbid(unsafe_code)]
+
 use proc_macro::{Delimiter, Literal, Span, TokenStream, TokenTree};
 use std::collections::HashSet;
 
@@ -81,13 +83,12 @@ fn hash_impl(input: TokenStream, depth: usize) -> TokenStream {
 }
 
 fn expand_hash(bytes: &[u8]) -> TokenStream {
-    let hashed = staticly_hash::fnv1a(bytes);
+    let hashed = staticly_hash::gouda(bytes);
 
     format!("{hashed}u64")
         .parse()
         .expect("generated hash should be a valid u64 literal")
 }
-
 
 #[proc_macro]
 pub fn unique(input: TokenStream) -> TokenStream {

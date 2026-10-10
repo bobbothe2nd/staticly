@@ -38,35 +38,35 @@ In one benchmark where all 64 keys are the same length:
 
 ```
 switch_8_keys/direct/hit_first
-    time:   [2.7926 ns 2.9141 ns 3.0452 ns]
+    time:   [1.0556 ns 1.0740 ns 1.1079 ns]
 switch_8_keys/hash/hit_first
-    time:   [12.053 ns 12.238 ns 12.412 ns]
+    time:   [4.4498 ns 4.5774 ns 4.7857 ns]
 switch_8_keys/precompute/hit_first
-    time:   [2.7717 ns 3.1705 ns 3.6354 ns]
+    time:   [1.2675 ns 1.3272 ns 1.4215 ns]
 switch_8_keys/direct/hit_middle
-    time:   [15.155 ns 16.584 ns 18.301 ns]
+    time:   [11.189 ns 12.104 ns 13.225 ns]
 switch_8_keys/hash/hit_middle
-    time:   [5.4854 ns 6.0965 ns 6.8647 ns]
+    time:   [4.7657 ns 4.8567 ns 4.9867 ns]
 switch_8_keys/precompute/hit_middle
-    time:   [1.4419 ns 1.4677 ns 1.5049 ns]
+    time:   [1.4312 ns 1.4495 ns 1.4767 ns]
 switch_8_keys/direct/hit_last
-    time:   [21.927 ns 23.777 ns 26.200 ns]
+    time:   [21.119 ns 22.894 ns 25.172 ns]
 switch_8_keys/hash/hit_last
-    time:   [4.7602 ns 4.8431 ns 5.0102 ns]
+    time:   [4.7508 ns 4.9732 ns 5.3117 ns]
 switch_8_keys/precompute/hit_last
-    time:   [1.2737 ns 1.3033 ns 1.3583 ns]
+    time:   [1.4373 ns 1.5033 ns 1.6057 ns]
 switch_8_keys/direct/miss
-    time:   [738.19 ps 753.32 ps 782.03 ps]
+    time:   [965.84 ps 1.0253 ns 1.1114 ns]
 switch_8_keys/hash/miss
-    time:   [4.1286 ns 4.1839 ns 4.2899 ns]
+    time:   [3.9438 ns 4.2044 ns 4.5475 ns]
 switch_8_keys/precompute/miss
-    time:   [1.4889 ns 1.6291 ns 1.8030 ns]
+    time:   [1.4327 ns 1.5430 ns 1.6971 ns]
 ```
 
 ## Usage
 
 ```rust
-use staticly::{hash, static_enum, static_map, static_set, switch, algo::fnv1a};
+use staticly::{hash, static_enum, static_map, static_set, switch, algo::gouda};
 
 static_map! {
     HTTP_STATUS: u64 = {
@@ -100,7 +100,7 @@ fn main() {
     const GREEN_HASH: u64 = Color::Green.hash();
     const BLUE_STR: &str = Color::Blue.as_str();
 
-    assert_eq!(GET_HASH, fnv1a(b"get"));
+    assert_eq!(GET_HASH, gouda(b"get"));
 
     assert!(!HTTP_STATUS.is_empty());
     assert_eq!(HTTP_STATUS.len(), 6);
@@ -136,3 +136,5 @@ fn main() {
     assert_eq!(GREEN_HASH, hash!("green"));
 }
 ```
+
+Gouda is a small, non-cryptographic hash optimized for static string dispatch. It's also a really good cheese to put on hashbrowns :).
