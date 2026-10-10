@@ -1,6 +1,6 @@
 [package]
 name = "staticly"
-version = "0.1.0"
+version = "0.1.1"
 description = "Compile-time lookup generator"
 edition = "2024"
 documentation = "https://docs.rs/staticly"

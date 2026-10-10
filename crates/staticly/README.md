@@ -1,6 +1,6 @@
 # Staticly
 
-Instead of writing huge match statements or iterators over strings for parsing, you can *staticly* switch themm using macros and constant hashes.
+Instead of writing huge match statements or iterators over strings for parsing, you can *staticly* switch them using macros and constant hashes.
 
 ## Macros
 

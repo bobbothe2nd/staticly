@@ -33,6 +33,7 @@ pub use staticly_macros::*;
 #[macro_export]
 macro_rules! static_map {
     ($(
+        $(#[$meta:meta])*
         $vis:vis $name:ident: $ty:ty = {$(
             $key:literal => $val:expr
         ),*$(,)?};
@@ -42,6 +43,7 @@ macro_rules! static_map {
                 $key
             ),*}
 
+            $(#[$meta])*
             $vis static $name: $crate::map::StaticMap<$ty, { 0$(+ {
                 let _ = $val;
                 1
@@ -111,6 +113,7 @@ macro_rules! static_map {
 #[macro_export]
 macro_rules! static_set {
     ($(
+        $(#[$meta:meta])*
         $vis:vis $name:ident = [$(
             $key:literal
         ),*$(,)?];
@@ -120,6 +123,7 @@ macro_rules! static_set {
                 $key
             ),*}
 
+            $(#[$meta])*
             $vis static $name: $crate::map::StaticSet<{ 0$(+ {
                 let _ = $key;
                 1
@@ -204,8 +208,10 @@ macro_rules! switch {
 ///
 /// ```rust
 /// staticly::static_enum! {
+///     /// documentation
 ///     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 ///     enum Color {
+///         /// documentation
 ///         Red = "red",
 ///         Green = "green",
 ///         Blue = "blue",
@@ -251,13 +257,14 @@ macro_rules! static_enum {
         $(#[$meta:meta])*
         $vis:vis enum $name:ident {
             $(
+                $(#[$var_meta:meta])*
                 $variant:ident = $key:literal
             ),* $(,)?
         }
     ) => {
         $(#[$meta])*
         $vis enum $name {
-            $($variant),*
+            $($(#[$var_meta])* $variant),*
         }
 
         $crate::static_enum! {
