@@ -1,5 +1,6 @@
-#![forbid(unsafe_code)]
+//! Macros for hashing strings at compile time
 
+#![forbid(unsafe_code, missing_docs)]
 #![no_std]
 
 pub mod map;
@@ -8,6 +9,27 @@ pub use staticly_hash as algo;
 
 pub use staticly_macros::*;
 
+/// Declares a constant static map
+///
+/// ```rust
+/// staticly::static_map! {
+///     HTTP_STATUS: u64 = {
+///         "OK" => 200,
+///         "Created" => 201,
+///         "No Content" => 204,
+///         "Bad Request" => 400,
+///         "Not Found" => 404,
+///         "Internal Server Error" => 500,
+///     };
+/// }
+///
+/// assert!(!HTTP_STATUS.is_empty());
+/// assert_eq!(HTTP_STATUS.len(), 6);
+/// assert!(HTTP_STATUS.contains_key("OK"));
+///
+/// assert_eq!(HTTP_STATUS.get("OK"), Some(200));
+/// assert_eq!(HTTP_STATUS.get_hash(staticly::algo::gouda(b"Not Found")), Some(404));
+/// ```
 #[macro_export]
 macro_rules! static_map {
     ($(
@@ -72,6 +94,20 @@ macro_rules! static_map {
     };
 }
 
+/// Declares a constant static set
+///
+/// ```rust
+/// staticly::static_set! {
+///     HTTP_METHODS = [
+///         "GET",
+///         "POST",
+///     ];
+/// }
+///
+/// assert!(!HTTP_METHODS.is_empty());
+/// assert_eq!(HTTP_METHODS.len(), 2);
+/// assert!(HTTP_METHODS.contains("GET"));
+/// ```
 #[macro_export]
 macro_rules! static_set {
     ($(
@@ -118,6 +154,18 @@ macro_rules! static_set {
     };
 }
 
+/// Single match statement accelerated with hashing
+///
+/// ```rust
+/// let val = staticly::switch!("123", {
+///     "123" => 123,
+///     "456" => 456,
+///     "789" => 789,
+///     _ => 0,
+/// });
+///
+/// assert_eq!(val, 123);
+///```
 #[macro_export]
 macro_rules! switch {
     ($var:expr, {
@@ -152,6 +200,51 @@ macro_rules! switch {
     };
 }
 
+/// Declares an enum and/or implements methods/constructors for it
+///
+/// ```rust
+/// staticly::static_enum! {
+///     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+///     enum Color {
+///         Red = "red",
+///         Green = "green",
+///         Blue = "blue",
+///     }
+/// }
+///
+/// const GREEN_HASH: u64 = Color::Green.hash();
+/// const BLUE_STR: &str = Color::Blue.as_str();
+///
+/// assert_eq!("red".parse(), Ok(Color::Red));
+/// assert_eq!(BLUE_STR, "blue");
+/// assert_eq!(GREEN_HASH, staticly::hash!("green"));
+/// ```
+///
+/// or
+///
+/// ```rust
+/// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// enum Color {
+///     Red,
+///     Blue,
+///     Green,
+/// }
+///
+/// staticly::static_enum! {
+///     impl Color {
+///         Red = "red",
+///         Green = "green",
+///         Blue = "blue",
+///     }
+/// }
+///
+/// const GREEN_HASH: u64 = Color::Green.hash();
+/// const BLUE_STR: &str = Color::Blue.as_str();
+///
+/// assert_eq!("red".parse(), Ok(Color::Red));
+/// assert_eq!(BLUE_STR, "blue");
+/// assert_eq!(GREEN_HASH, staticly::hash!("green"));
+/// ```
 #[macro_export]
 macro_rules! static_enum {
     (
@@ -232,3 +325,7 @@ macro_rules! static_enum {
         }
     };
 }
+
+#[allow(dead_code)]
+#[doc = include_str!("../README.md")]
+fn test() {}

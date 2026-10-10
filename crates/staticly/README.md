@@ -36,7 +36,7 @@ For few keys, this can have significantly worse performance. As possible keys an
 
 In one benchmark where all 64 keys are the same length:
 
-```
+```text
 switch_8_keys/direct/hit_first
     time:   [1.0556 ns 1.0740 ns 1.1079 ns]
 switch_8_keys/hash/hit_first
@@ -95,46 +95,44 @@ static_enum! {
     }
 }
 
-fn main() {
-    const GET_HASH: u64 = hash!("get");
-    const GREEN_HASH: u64 = Color::Green.hash();
-    const BLUE_STR: &str = Color::Blue.as_str();
+const GET_HASH: u64 = hash!("get");
+const GREEN_HASH: u64 = Color::Green.hash();
+const BLUE_STR: &str = Color::Blue.as_str();
 
-    assert_eq!(GET_HASH, gouda(b"get"));
+assert_eq!(GET_HASH, gouda(b"get"));
 
-    assert!(!HTTP_STATUS.is_empty());
-    assert_eq!(HTTP_STATUS.len(), 6);
-    assert!(HTTP_STATUS.contains_key("OK"));
+assert!(!HTTP_STATUS.is_empty());
+assert_eq!(HTTP_STATUS.len(), 6);
+assert!(HTTP_STATUS.contains_key("OK"));
 
-    assert_eq!(HTTP_STATUS.get("OK"), Some(200));
-    assert_eq!(HTTP_STATUS.get_hash(hash!("Not Found")), Some(404));
+assert_eq!(HTTP_STATUS.get("OK"), Some(200));
+assert_eq!(HTTP_STATUS.get_hash(hash!("Not Found")), Some(404));
 
-    println!("status:");
+println!("status:");
 
-    for (name, status) in HTTP_STATUS.iter() {
-        println!("  {name} = {status}");
-    }
-
-    assert!(!HTTP_METHODS.is_empty());
-    assert_eq!(HTTP_METHODS.len(), 2);
-    assert!(HTTP_METHODS.contains("GET"));
-
-    println!("\nmethods:");
-
-    for name in HTTP_METHODS.iter() {
-        println!("  {name}");
-    }
-
-    let val = switch!("123", {
-        "123" => 123,
-        _ => 0,
-    });
-    assert_eq!(val, 123);
-
-    assert_eq!("red".parse(), Ok(Color::Red));
-    assert_eq!(BLUE_STR, "blue");
-    assert_eq!(GREEN_HASH, hash!("green"));
+for (name, status) in HTTP_STATUS.iter() {
+    println!("  {name} = {status}");
 }
+
+assert!(!HTTP_METHODS.is_empty());
+assert_eq!(HTTP_METHODS.len(), 2);
+assert!(HTTP_METHODS.contains("GET"));
+
+println!("\nmethods:");
+
+for name in HTTP_METHODS.iter() {
+    println!("  {name}");
+}
+
+let val = switch!("123", {
+    "123" => 123,
+    _ => 0,
+});
+assert_eq!(val, 123);
+
+assert_eq!("red".parse(), Ok(Color::Red));
+assert_eq!(BLUE_STR, "blue");
+assert_eq!(GREEN_HASH, hash!("green"));
 ```
 
 Gouda is a small, non-cryptographic hash optimized for static string dispatch. It's also a really good cheese to put on hashbrowns :).

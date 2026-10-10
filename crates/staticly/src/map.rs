@@ -1,4 +1,7 @@
-#[derive(Debug)]
+//! Implementations of [`StaticMap`] and [`StaticSet`] for no-std
+
+/// Like `std::collections::HashMap`, but with compile-time defined keys/values
+#[derive(Debug, Clone)]
 pub struct StaticMap<V, const LEN: usize> {
     get_func: fn(&str) -> Option<V>,
     get_hash_func: fn(u64) -> Option<V>,
@@ -7,6 +10,7 @@ pub struct StaticMap<V, const LEN: usize> {
 }
 
 impl<V, const LEN: usize> StaticMap<V, LEN> {
+    /// The length of this map, equal to `LEN`
     pub const LEN: usize = LEN;
 
     /// Constructs a new map from a VTable.
@@ -53,53 +57,73 @@ impl<V, const LEN: usize> StaticMap<V, LEN> {
         (self.contains_key_func)(query)
     }
 
+    /// Gets the length of this map, equal to `LEN`
     #[inline(always)]
     pub const fn len(&self) -> usize {
         LEN
     }
 
+    /// Checks if this map has any keys, equal to `LEN == 0`
     #[inline(always)]
     pub const fn is_empty(&self) -> bool {
         LEN == 0
     }
 
+    /// Converts the static map into a static iterator
     #[inline(always)]
-    pub fn into_iter(&self) -> StaticMapIter<V> {
-        StaticMapIter { next_func: self.iter_func, index: 0 }
+    pub const fn iter(&self) -> StaticMapIter<V> {
+        StaticMapIter {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
+    /// Converts the static map into a static iterator over values
     #[inline(always)]
-    pub fn into_values(&self) -> Values<V> {
-        Values { next_func: self.iter_func, index: 0 }
+    pub const fn values(&self) -> Values<V> {
+        Values {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
+    /// Converts the static map into a static iterator over keys
     #[inline(always)]
-    pub fn into_keys(&self) -> Keys<V> {
-        Keys { next_func: self.iter_func, index: 0 }
+    pub const fn keys(&self) -> Keys<V> {
+        Keys {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
+    /// Converts the static map into a static iterator
     #[inline(always)]
-    pub fn iter(&self) -> StaticMapIter<V> {
-        self.into_iter()
+    pub const fn into_iter(self) -> StaticMapIter<V> {
+        self.iter()
     }
 
+    /// Converts the static map into a static iterator over values
     #[inline(always)]
-    pub fn values(&self) -> Values<V> {
-        self.into_values()
+    pub fn into_values(self) -> Values<V> {
+        self.values()
     }
 
+    /// Converts the static map into a static iterator over keys
     #[inline(always)]
-    pub fn keys(&self) -> Keys<V> {
-        self.into_keys()
+    pub const fn into_keys(self) -> Keys<V> {
+        self.keys()
     }
 }
-#[derive(Debug)]
+
+/// Like `std::collections::HashSet`, but with compile-time defined keys
+#[derive(Debug, Clone)]
 pub struct StaticSet<const LEN: usize> {
     iter_func: fn(usize) -> Option<&'static str>,
     contains_func: fn(&str) -> bool,
 }
 
 impl<const LEN: usize> StaticSet<LEN> {
+    /// The length of this map, equal to `LEN`
     pub const LEN: usize = LEN;
 
     /// Constructs a new map from a VTable.
@@ -123,28 +147,36 @@ impl<const LEN: usize> StaticSet<LEN> {
         (self.contains_func)(query)
     }
 
+    /// Gets the length of this map, equal to `LEN`
     #[inline(always)]
     pub const fn len(&self) -> usize {
         LEN
     }
 
+    /// Checks if this map has any keys, equal to `LEN == 0`
     #[inline(always)]
     pub const fn is_empty(&self) -> bool {
         LEN == 0
     }
 
+    /// Converts the static map into a static iterator
     #[inline(always)]
-    pub fn into_iter(&self) -> StaticSetIter {
-        StaticSetIter { next_func: self.iter_func, index: 0 }
+    pub const fn iter(&self) -> StaticSetIter {
+        StaticSetIter {
+            next_func: self.iter_func,
+            index: 0,
+        }
     }
 
+    /// Converts the static map into a static iterator
     #[inline(always)]
-    pub fn iter(&self) -> StaticSetIter {
-        self.into_iter()
+    pub const fn into_iter(&self) -> StaticSetIter {
+        self.iter()
     }
 }
 
-#[derive(Debug)]
+/// Iterator over key/value pairs of a static map
+#[derive(Debug, Clone)]
 pub struct StaticMapIter<V> {
     next_func: fn(usize) -> Option<(&'static str, V)>,
     index: usize,
@@ -160,7 +192,8 @@ impl<V> Iterator for StaticMapIter<V> {
     }
 }
 
-#[derive(Debug)]
+/// Iterator over keys of a static set
+#[derive(Debug, Clone)]
 pub struct StaticSetIter {
     next_func: fn(usize) -> Option<&'static str>,
     index: usize,
@@ -176,7 +209,8 @@ impl Iterator for StaticSetIter {
     }
 }
 
-#[derive(Debug)]
+/// Static iterator over values
+#[derive(Debug, Clone)]
 pub struct Values<V> {
     next_func: fn(usize) -> Option<(&'static str, V)>,
     index: usize,
@@ -192,7 +226,8 @@ impl<V> Iterator for Values<V> {
     }
 }
 
-#[derive(Debug)]
+/// Static iterator over keys
+#[derive(Debug, Clone)]
 pub struct Keys<V> {
     next_func: fn(usize) -> Option<(&'static str, V)>,
     index: usize,

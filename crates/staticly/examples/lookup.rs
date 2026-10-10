@@ -1,4 +1,4 @@
-use staticly::{hash, static_enum, static_map, static_set, switch, algo::gouda};
+use staticly::{algo::gouda, hash, static_enum, static_map, static_set, switch};
 
 static_map! {
     HTTP_STATUS: u64 = {
@@ -30,15 +30,12 @@ static_enum! {
 fn main() {
     const NOT_FOUND_HASH: u64 = hash!("Not Found");
 
-    assert_eq!(
-        NOT_FOUND_HASH,
-        gouda(b"Not Found")
-    );
-
     const GET_HASH: u64 = hash!("get");
+
     const GREEN_HASH: u64 = Color::Green.hash();
     const BLUE_STR: &str = Color::Blue.as_str();
 
+    assert_eq!(NOT_FOUND_HASH, gouda(b"Not Found"));
     assert_eq!(GET_HASH, gouda(b"get"));
 
     assert!(!HTTP_STATUS.is_empty());
@@ -66,6 +63,8 @@ fn main() {
 
     let val = switch!("123", {
         "123" => 123,
+        "456" => 456,
+        "789" => 789,
         _ => 0,
     });
     assert_eq!(val, 123);

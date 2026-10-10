@@ -1,6 +1,6 @@
 //! Macros for `staticly` hashing/lookup
 
-#![forbid(unsafe_code)]
+#![forbid(unsafe_code, missing_docs)]
 
 use proc_macro::{Delimiter, Literal, Span, TokenStream, TokenTree};
 use std::collections::HashSet;
@@ -34,6 +34,13 @@ macro_rules! error {
 
 const MAX_DEPTH: usize = 32;
 
+/// Hash a string literal at compile time (`hash!("hashed using Gouda")`).
+///
+/// This is an extremely powerful macro for static dispatch tables. Without it, you can't take arbitrary strings and convert them to hashed `u64`s.
+///
+/// ```rust
+/// const HASHED: u64 = staticly_macros::hash!("this");
+/// ```
 #[proc_macro]
 pub fn hash(input: TokenStream) -> TokenStream {
     hash_impl(input, 0)
@@ -64,10 +71,7 @@ fn hash_impl(input: TokenStream, depth: usize) -> TokenStream {
             if let Some(lit) = parse_string_literal(&lit) {
                 expand_hash(lit.as_bytes())
             } else {
-                error!(
-                    lit.span(),
-                    "expected a string literal",
-                )
+                error!(lit.span(), "expected a string literal",)
             }
         }
 
@@ -90,6 +94,24 @@ fn expand_hash(bytes: &[u8]) -> TokenStream {
         .expect("generated hash should be a valid u64 literal")
 }
 
+/// Asserts that a set of string literals has no repeated values. If they aren't all unique, this creates a compile error.
+///
+/// ```rust
+/// staticly_macros::unique! {
+///     "foo",
+///     "bar",
+///     "foobar",
+/// }
+/// ```
+///
+/// ```compile_fail
+/// staticly_macros::unique! {
+///     "foo",
+///     "bar",
+///     "foobar",
+///     "foo",
+/// }
+/// ```
 #[proc_macro]
 pub fn unique(input: TokenStream) -> TokenStream {
     let input = unwrap_none_groups(input, 0);
@@ -99,9 +121,7 @@ pub fn unique(input: TokenStream) -> TokenStream {
 
     for token in input {
         match token {
-            TokenTree::Punct(punct)
-                if punct == ',' && !expect_literal =>
-            {
+            TokenTree::Punct(punct) if punct == ',' && !expect_literal => {
                 expect_literal = true;
             }
 
@@ -109,28 +129,19 @@ pub fn unique(input: TokenStream) -> TokenStream {
                 let value = match parse_string_literal(&lit) {
                     Some(value) => value,
                     None => {
-                        return error!(
-                            lit.span(),
-                            "expected a string literal",
-                        );
+                        return error!(lit.span(), "expected a string literal",);
                     }
                 };
 
                 if !seen.insert(value.clone()) {
-                    return error!(
-                        lit.span(),
-                        "duplicate key `{value}`",
-                    );
+                    return error!(lit.span(), "duplicate key `{value}`",);
                 }
 
                 expect_literal = false;
             }
 
             token => {
-                return error!(
-                    token.span(),
-                    "expected a string literal followed by `,`",
-                );
+                return error!(token.span(), "expected a string literal followed by `,`",);
             }
         }
     }
@@ -146,9 +157,7 @@ fn unwrap_none_groups(input: TokenStream, depth: usize) -> TokenStream {
     input
         .into_iter()
         .flat_map(|token| match token {
-            TokenTree::Group(group)
-                if group.delimiter() == Delimiter::None =>
-            {
+            TokenTree::Group(group) if group.delimiter() == Delimiter::None => {
                 unwrap_none_groups(group.stream(), depth + 1)
             }
             other => TokenStream::from(other),
