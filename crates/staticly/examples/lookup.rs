@@ -30,6 +30,11 @@ static_enum! {
 fn main() {
     const NOT_FOUND_HASH: u64 = hash!("Not Found");
 
+<<<<<<< HEAD
+=======
+    assert_eq!(NOT_FOUND_HASH, gouda(b"Not Found"));
+
+>>>>>>> ba5e60cfceba11284255adf2578415dda091a2e9
     const GET_HASH: u64 = hash!("get");
 
     const GREEN_HASH: u64 = Color::Green.hash();

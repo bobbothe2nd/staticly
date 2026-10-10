@@ -71,7 +71,11 @@ impl<V, const LEN: usize> StaticMap<V, LEN> {
 
     /// Converts the static map into a static iterator
     #[inline(always)]
+<<<<<<< HEAD
     pub const fn iter(&self) -> StaticMapIter<V> {
+=======
+    pub fn into_iter(&self) -> StaticMapIter<V> {
+>>>>>>> ba5e60cfceba11284255adf2578415dda091a2e9
         StaticMapIter {
             next_func: self.iter_func,
             index: 0,
@@ -80,7 +84,11 @@ impl<V, const LEN: usize> StaticMap<V, LEN> {
 
     /// Converts the static map into a static iterator over values
     #[inline(always)]
+<<<<<<< HEAD
     pub const fn values(&self) -> Values<V> {
+=======
+    pub fn into_values(&self) -> Values<V> {
+>>>>>>> ba5e60cfceba11284255adf2578415dda091a2e9
         Values {
             next_func: self.iter_func,
             index: 0,
@@ -89,7 +97,11 @@ impl<V, const LEN: usize> StaticMap<V, LEN> {
 
     /// Converts the static map into a static iterator over keys
     #[inline(always)]
+<<<<<<< HEAD
     pub const fn keys(&self) -> Keys<V> {
+=======
+    pub fn into_keys(&self) -> Keys<V> {
+>>>>>>> ba5e60cfceba11284255adf2578415dda091a2e9
         Keys {
             next_func: self.iter_func,
             index: 0,
@@ -161,7 +173,11 @@ impl<const LEN: usize> StaticSet<LEN> {
 
     /// Converts the static map into a static iterator
     #[inline(always)]
+<<<<<<< HEAD
     pub const fn iter(&self) -> StaticSetIter {
+=======
+    pub fn into_iter(&self) -> StaticSetIter {
+>>>>>>> ba5e60cfceba11284255adf2578415dda091a2e9
         StaticSetIter {
             next_func: self.iter_func,
             index: 0,
