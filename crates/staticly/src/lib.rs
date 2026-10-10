@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 //! Macros for hashing strings at compile time
 
 #![forbid(unsafe_code, missing_docs)]
-=======
-#![forbid(unsafe_code)]
->>>>>>> ba5e60cfceba11284255adf2578415dda091a2e9
 #![no_std]
 
 pub mod map;
